@@ -5,7 +5,7 @@
 Thai Health industry is found as a outperforming stock growth that the market for at least 5 executives year. They perform even better during to Covid 19. Over the past three years, the earnings of businesses in the healthcare sector have increased by 22% annually with profit growth of 14% per year. This indicates that these businesses are producing more sales and subsequently their profits are increasing too.
 
 [!image](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
-![alt text]([http://url/to/img.png](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
 
 <insert graph 5 year>
 

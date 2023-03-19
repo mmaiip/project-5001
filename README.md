@@ -132,15 +132,16 @@ for i in data:
 data_Cat.reset_index(drop=1,inplace=True)    
 data_Cat.head()
 ```
+<insert df result from python>
 
 Add new column provide a firm size from market capitalisation data.
 The critiria are:
  
- (i) Small Cap: Market Cap < 10,000 MB
+  (i) Small Cap: Market Cap < 10,000 MB
                                    
- (ii) Mid Cap: 10,000 MB < Market Cap. < 50,000 MB
+  (ii) Mid Cap: 10,000 MB < Market Cap. < 50,000 MB
                                                
- (iii) Large Cap: Market Cap > 50,000 MB
+  (iii) Large Cap: Market Cap > 50,000 MB
                                      
 source: https://knowledge.bualuang.co.th/knowledge-base/market-cap/
  
@@ -150,10 +151,9 @@ data_Cat.loc[(data_Cat['marketCap'] < 50000000000) & (data_Cat['marketCap'] >= 1
 data_Cat.loc[(data_Cat['marketCap'] >= 50000000000),'captype'] = 'large_cap'
 data_Cat.head() 
 ```
+<insert df result from python>
  
 
- 
- 
 ### #prepare transaction history
 ```python
 data_price = pd.DataFrame()
@@ -170,7 +170,9 @@ except:
 data_price['date'] = pd.to_datetime(data_price['date'], utc=True).dt.date
 data_price.head()
 ``` 
- 
+<insert df result from python>
+
+	
 ## Which industry are the driving changes
 
 

@@ -2,7 +2,7 @@
 
 # Are Thai healthcare related stock still captivating?
 
-Thai Health industry is found as a outperforming stock growth that the market for at least 5 executives year. They perform even better during to Covid 19. Over the past three years, the earnings of businesses in the healthcare sector have increased by 22% annually with profit growth of 14% per year. This indicates that these businesses are producing more sales and subsequently their profits are increasing too.
+Thai Health industry is found as a outperforming stock growth that the market for at least 5 executives year. They perform even better during the Covid-19 era (2019-2022). Over the past three years, the earnings of businesses in the healthcare sector have increased by 22% annually with profit growth of 14% per year. This indicates that these businesses are producing more sales and subsequently their profits are increasing too.
 
 ![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
 
@@ -10,7 +10,10 @@ Thai Health industry is found as a outperforming stock growth that the market fo
 
 Unfortunately, after situation of covid-19 recover, the growth of healthcare industry drop. The overall growing pattern are converving to the market (compare with SET index). This lead to the question that, "Are healthcare related stock still captivating. If yes, which kind of stock shall we invest on?
 
-<insert graph 1 year and 6 months>
+<insert graph 1 year>
+
+<insert graph 6 months>
+
 
 ## Installation
 ```python
@@ -28,7 +31,7 @@ os.chdir(os.getcwd())
 ```
 
 
-## dataset
+## Dataset
 
 We use data from import - yahooquery which retrieved nearly all data from Yahoo Finance. We select top largest 35 stocks with in healthcare sector.
 
@@ -88,7 +91,7 @@ valuation_measures
  
 However, the data is not available for next step computation. We select some data point within dataset 'summary_detail', 'asset_profile' and 'valuation_measures' to use.
 
-### #valuation_measures
+#### valuation_measures
 Select only data with data collect quarterly (period type = 3 month)
  
 ```python
@@ -108,7 +111,7 @@ piv_pe
 ```
 <insert df result from python>
  
-### Replace missing data:
+##### Replace missing data:
 With the nature of stock data, just few data is missing out. Some are missing due to the fact that that stock just enter the stock market after 2017. Only BCH stock is found that the data is truly missing due to the late data submission and yahoofinance have not update the new data yet. We solve this missing by inserting more updated data from search engine.
  
 ```python
@@ -119,7 +122,7 @@ missing = pd.DataFrame({'symbol':['BCH.bk'],
 data_vm = pd.concat([data_vm,missing])
 ```
 
-### #asset_profile
+#### asset_profile
 Select several column that will be used further.
  
 ```python
@@ -156,7 +159,6 @@ data_Cat.head()
 <insert df result from python>
  
 
-### #prepare transaction history
 ```python
 data_price = pd.DataFrame()
 start = '2017-01-01'

@@ -193,4 +193,193 @@ The healthcare sector has been the beneficiary of government policy that stretch
 All of these actions will assist Thai private hospitals in broadening their customer base to include more foreigners, a market segment with greater purchasing power who frequently spend more on healthcare than their local counterparts. As a result, private hospitals are experiencing steady revenue growth and are maintaining excellent profit margins. And this has in fact led to the steady growth of medical tourism in the country.
 In addition, Thailand is quickly gaining an international reputation as a high-quality and inexpensive destination for health tourists" to visit and get complicated medical procedures performed which make Thai healthcare industry become more and more attractive.
 
+```python
+data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
+data4 = data4.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
+data4.head()
+```
+
+```python
+data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
+data4 = data4.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
+data4.head()
+```
+
+```python
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.lineplot(data=data4, x="asOfDate", y="pct_change", hue='captype',lw=5)
+g.axhline(0, c='k', ls='-', lw=1.2)
+plt.xticks(rotation=45)
+
+for x, y in zip(data4['asOfDate'], data4['pct_change']):
+     plt.text(x = x,
+              y = y-0.01,
+              s = '{:.3f}'.format(y),
+              color = 'black')
+
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188963-e8d32df5-b6b6-4cc3-82be-d2d38a01bfbe.png)
+
+```python
+data5 = pd.merge(data_vm,data_Cat[['symbol','industry']],how='left',on='symbol') 
+data5 = data5.groupby(['industry', 'asOfDate'])['MarketCap'].sum().reset_index()
+
+tmp_forMerge = pd.DataFrame()
+for i in data5['industry'].unique():
+    tmp = data5.loc[data5['industry']==i]
+    tmp = tmp.sort_values('asOfDate').reset_index(drop=1)
+    tmp['pct_change'] = tmp['MarketCap'].pct_change()
+    tmp_forMerge = pd.concat([tmp_forMerge,tmp])
+    
+data5 = pd.merge(data5,tmp_forMerge,on=['industry','asOfDate'], how='left')
+data5.head()
+```
+```python
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.lineplot(data=data5, x="asOfDate", y="pct_change", hue='industry',lw=5)
+g.axhline(0, c='k', ls='-', lw=1.2)
+plt.xticks(rotation=45)
+
+for x, y in zip(data5['asOfDate'], data5['pct_change']):
+     plt.text(x = x,
+              y = y-0.01,
+              s = '{:.3f}'.format(y),
+              color = 'black')
+
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188964-ba00eb8f-40a7-4422-89aa-e085af44a6f2.png)
+
+
+
+```python
+data1 = data_vm.loc[data_vm['asOfDate']==datetime.date(2022, 12, 31)]
+data1 = data1[['symbol','PeRatio']]
+data1 = pd.merge(data1,data_Cat[['symbol','captype']],how='left',on='symbol')
+data1 = data1.sort_values(['captype','symbol'])
+
+sns.set(rc={'figure.figsize':(16,12), 'figure.dpi':300}) #rc={'figure.dpi':300}
+g = sns.barplot(data = data1, x='PeRatio',  y='symbol', orient='h',hue='captype',dodge=False)
+g.axvline(data1.PeRatio.mean(), c='k', ls='-', lw=2.5)
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
+
+```python
+data2 = data_vm.loc[(data_vm['asOfDate']==datetime.date(2022, 12, 31)) | (data_vm['asOfDate']==datetime.date(2021, 12, 31))]
+data2 = data2[['symbol','PeRatio','asOfDate']]
+
+data2 = pd.merge(data2,data_Cat[['symbol','marketCap']],how='left',on='symbol')
+data2 = data2.sort_values(['marketCap','symbol','asOfDate'],ascending = [False,True,True])
+
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.barplot(data=data2, x="symbol", y="PeRatio", hue="asOfDate")
+plt.xticks(rotation=45)
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188961-b1f6983f-6388-429d-b3f1-98d76fc956c7.png)
+
+```python
+data3 = piv_pe[['symbol','pct_change']]
+data3 = pd.merge(data3,data_Cat[['symbol','marketCap','captype','industry']],how='left',on='symbol')
+data3 = data3.sort_values(['marketCap','symbol'],ascending = [False,True])
+
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.barplot(data=data3, x="symbol", y="pct_change", hue='captype',dodge=False)
+plt.xticks(rotation=45)
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226191708-b1b16d10-be5b-4f2f-8d04-f0a66cdb4af4.png)
+
+```python
+dataSelect = data_price.loc[data_price['symbol'].isin( data_Cat.loc[data_Cat['captype']=='large_cap']['symbol'])]
+tmp_forMerge = pd.DataFrame()
+for i in dataSelect['symbol'].unique():
+    tmp = dataSelect.loc[dataSelect['symbol']==i]
+    tmp = tmp.sort_values('date').reset_index(drop=1)
+    tmp['pct_change'] = tmp['close'].pct_change()
+    tmp_forMerge = pd.concat([tmp_forMerge,tmp])
+    
+dataSelect = tmp_forMerge.copy().reset_index(drop=1)
+dataSelect.head()
+```
+
+```python
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.lineplot(data=dataSelect, x="date", y="close", hue='symbol',lw=5)
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188966-9f48ad6c-34e4-407d-b3d5-136941dc95b1.png)
+
+```python
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.lineplot(data=dataSelect, x="date", y="pct_change", hue='symbol',lw=5)
+plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188968-45d28251-7163-4ba9-910b-2b8db0034512.png)
+
+```python
+for idx, i in enumerate (dataSelect['symbol'].unique()):
+    tmp_ = dataSelect.loc[dataSelect['symbol']==i].reset_index(drop=1)
+    fig, axes = plt.subplots(2, 1)
+    sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+
+    sns.lineplot(data=tmp_, x="date", y="close", hue='symbol',lw=5, ax=axes[0])
+    sns.lineplot(data=tmp_, x="date", y="pct_change", hue='symbol',lw=5, ax=axes[1])
+    plt.show()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188969-5baa8e35-b0d6-40e6-930b-57701c92eedf.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188971-341eade9-cf46-48cf-a592-fe517dcf6824.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188973-c3ad6bf1-d406-47f7-b51e-a5a14eb935dc.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188974-f327f83f-33b3-4d1f-8e82-52253b8cbe8b.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188976-0686953f-84db-461c-a3ab-972b0b067744.png)
+
+
+```python
+dataSelect2 = data_price.loc[(data_price['symbol'].isin( data_Cat.loc[data_Cat['captype']=='large_cap']['symbol'])) & 
+                            (pd.to_datetime(data_price['date']).dt.date >= datetime.date(2022,1,1)) & (pd.to_datetime(data_price['date']).dt.date <= datetime.date(2022,12,31))]
+dataSelect2.head()
+```
+![alt text](https://user-images.githubusercontent.com/38032736/226188977-c03be305-31c7-4247-b961-4670adaa5c65.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188978-3d134283-9843-4c1d-8476-e1b577c44c1d.png)
+
+```python
+df_return = pd.DataFrame()
+for idx, i in enumerate (dataSelect2['symbol'].unique()):
+    tmp_ = dataSelect2.loc[dataSelect2['symbol']==i].reset_index(drop=1)
+    fig, axes = plt.subplots(3)
+    sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+    sns.lineplot(data=tmp_, x="date", y="close", hue='symbol',lw=5, ax=axes[0])
+    sns.lineplot(data=tmp_, x="date", y="pct_change", hue='symbol', ax=axes[1]).set(xticklabels=[])
+    
+    min_val = tmp_['pct_change'].min()
+    max_val = tmp_['pct_change'].max()
+    
+    abs_max = abs(max_val) if abs(max_val) > abs(min_val) else abs(min_val)
+    val_width = max_val - min_val
+    n_bins = 17
+    bin_width = val_width/n_bins
+
+
+    sns.histplot(data=tmp_, x="pct_change", ax=axes[2],bins=n_bins, binrange=(-abs_max, abs_max))
+    plt.show()
+    df_return = pd.concat([df_return,pd.DataFrame({'symbol':[i],'return':[tmp_['pct_change'].sum()]})])
+    print ('sum pct_change', i, tmp_['pct_change'].sum())
+```
+
+![alt text](https://user-images.githubusercontent.com/38032736/226188979-6dc4efa9-7739-4512-a7d9-8b7cba968387.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188982-991782c4-f4d5-46e9-be41-32380e5d8a3e.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188984-051d2775-11ea-49ee-b709-711e1b12ad6d.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188987-79f5c495-43f1-44a1-8b12-58e2ac88d1dc.png)
+![alt text](https://user-images.githubusercontent.com/38032736/226188988-6ce5de2b-73d3-4106-a9e3-dd31ad94d72d.png)
+
+```python
+sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
+g = sns.barplot(data=df_return, x="symbol", y="return", hue='symbol',dodge=False)
+plt.show()
+```
+
+![alt text](https://user-images.githubusercontent.com/38032736/226188989-f361fe34-5956-4a36-9b71-76da93b3fe30.png)
+
 

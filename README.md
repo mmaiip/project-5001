@@ -135,8 +135,6 @@ Prepare historical data in our interested timeframe.
 
 ```python
 data_price = pd.DataFrame()
-start = '2017-01-01'
-end = '2023-02-28'
 try:
     df_history = tickers.history(interval = '1d', start= start, end = end )
     df_history = df_history.reset_index()

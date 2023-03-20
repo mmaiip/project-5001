@@ -1,6 +1,3 @@
-นักศึกษามีการใช้งานเครื่องมือเขียนโปรแกรมที่เกี่ยวข้องกับครึ่งเทอมแรกของวิชานี้ (Pandas/NumPy, Matplotlib/Seaborn) อย่างมีนัยสําคัญทั้งในกระบวนการจัดการและทําความสะอาดข้อมูล กระบวนการย่อยและวิเคราะห์ข้อมูล รวมถึงกระบวนการสรุปผลและแสดงภาพนิทัศน์ของข้อมูล
-
-
 # Are Thai healthcare related stock still captivating?
 
 Thai Health industry is found as a outperforming stock growth that the market for at least 5 executives year. They perform even better during the Covid-19 era (2019-2022). Over the past three years, the earnings of businesses in the healthcare sector have increased by 22% annually with profit growth of 14% per year. This indicates that these businesses are producing more sales and subsequently their profits are increasing too.
@@ -482,7 +479,7 @@ BCH price are fluctuate a lot in 2022. Price start at ฿19 and end at ฿20 whi
 	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188988-6ce5de2b-73d3-4106-a9e3-dd31ad94d72d.png)
 
-We also provide a return graph if investor hold stock for a year. The return range from 8% - 70% which are very high comparing to the overall stock market.
+We also provide a return graph if investor do day trade for a year. The return range from 8% - 70% which are very high comparing to the overall stock market.
 	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
@@ -504,7 +501,7 @@ In conclusion
 
 - High fluctuation stock are RAM and THG (more than -10% - 10%)
 	
-- Stock with highest return if they hold stock for year is THG and lowest is BCH. Even the lowest return stock provide a return around 8% wish is very attractive for holding stock for year.
+- Stock with highest return if they do day trade for year is THG and lowest is BCH. Even the lowest return stock provide a return around 8% wish is very attractive for holding stock for year.
 
 Up to this point, we conclude that even after the COVID-19 era, healthcare sector stock are still attractive. But be aware that not all stock is interesting. Medical care in a large company  are the one that still perform really well after the COVID era. We suspect that this because the impact of health tourism which can be read further in our last part. Up to this point, investor can customised portfolio by their risk and return preference.
 

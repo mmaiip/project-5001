@@ -180,23 +180,23 @@ data_Cat.head()
 	
 	
 ```python
-data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
-data4 = data4.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
-data4
+data1 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
+data1 = data1.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
+data1
 ```
 
 ![alt text](https://user-images.githubusercontent.com/118241553/226274141-c6508629-ef31-4bfd-a0b1-958cd2d29a0b.png)
 	
 ```python
 tmp_forMerge = pd.DataFrame()
-for i in data4['captype'].unique():
-    tmp = data4.loc[data4['captype']==i]
+for i in data1['captype'].unique():
+    tmp = data1.loc[data1['captype']==i]
     tmp = tmp.sort_values('asOfDate').reset_index(drop=1)
     tmp['pct_change'] = tmp['MarketCap'].pct_change()
     tmp_forMerge = pd.concat([tmp_forMerge,tmp])
     
-data4 = pd.merge(data4,tmp_forMerge,on=['captype','asOfDate'], how='left')
-data4
+data1 = pd.merge(data1,tmp_forMerge,on=['captype','asOfDate'], how='left')
+data1
 ```
 
 ![alt text](https://user-images.githubusercontent.com/118241553/226274126-aef5dc53-2c26-4467-b34b-c11b37087783.png)	
@@ -205,11 +205,11 @@ According to graph below, Blue, orange, and green lines represent large-cap, mid
 	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
-g = sns.lineplot(data=data4, x="asOfDate", y="pct_change", hue='captype',lw=5)
+g = sns.lineplot(data=data1, x="asOfDate", y="pct_change", hue='captype',lw=5)
 g.axhline(0, c='k', ls='-', lw=1.2)
 plt.xticks(rotation=45)
 
-for x, y in zip(data4['asOfDate'], data4['pct_change']):
+for x, y in zip(data1['asOfDate'], data1['pct_change']):
      plt.text(x = x,
               y = y-0.01,
               s = '{:.3f}'.format(y),
@@ -224,18 +224,18 @@ Secondly, we look into what firms do. So we divided firms into groups by their i
 
 
 ```python
-data5 = pd.merge(data_vm,data_Cat[['symbol','industry']],how='left',on='symbol') 
-data5 = data5.groupby(['industry', 'asOfDate'])['MarketCap'].sum().reset_index()
+data2 = pd.merge(data_vm,data_Cat[['symbol','industry']],how='left',on='symbol') 
+data2 = data2.groupby(['industry', 'asOfDate'])['MarketCap'].sum().reset_index()
 
 tmp_forMerge = pd.DataFrame()
-for i in data5['industry'].unique():
-    tmp = data5.loc[data5['industry']==i]
+for i in data2['industry'].unique():
+    tmp = data2.loc[data2['industry']==i]
     tmp = tmp.sort_values('asOfDate').reset_index(drop=1)
     tmp['pct_change'] = tmp['MarketCap'].pct_change()
     tmp_forMerge = pd.concat([tmp_forMerge,tmp])
     
-data5 = pd.merge(data5,tmp_forMerge,on=['industry','asOfDate'], how='left')
-data5
+data2 = pd.merge(data2,tmp_forMerge,on=['industry','asOfDate'], how='left')
+data2
 ```
 
 ![alt text](https://user-images.githubusercontent.com/118241553/226275360-d18ba8c4-bc2f-412f-b9ad-2f78c704080e.png)
@@ -247,11 +247,11 @@ All types of industries perform in the same direction.
 	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
-g = sns.lineplot(data=data5, x="asOfDate", y="pct_change", hue='industry',lw=5)
+g = sns.lineplot(data=data2, x="asOfDate", y="pct_change", hue='industry',lw=5)
 g.axhline(0, c='k', ls='-', lw=1.2)
 plt.xticks(rotation=45)
 
-for x, y in zip(data5['asOfDate'], data5['pct_change']):
+for x, y in zip(data2['asOfDate'], data2['pct_change']):
      plt.text(x = x,
               y = y-0.01,
               s = '{:.3f}'.format(y),
@@ -268,14 +268,14 @@ Next, we measure company attractiveness by focusing on the “PE ratio”.
 The lower PE ratio compared with other stocks show that the stock we are focusing on is relatively cheaper than other. Seeing from the next figure, we compare PE Ratio with their median PE. Some are about and lower than the median. We cannot see any patterns within the firm-cap type. 
 	
 ```python
-data1 = data_vm.loc[data_vm['asOfDate']==datetime.date(2022, 12, 31)]
-data1 = data1[['symbol','PeRatio']]
-data1 = pd.merge(data1,data_Cat[['symbol','captype']],how='left',on='symbol')
-data1 = data1.sort_values(['captype','symbol'])
+data3 = data_vm.loc[data_vm['asOfDate']==datetime.date(2022, 12, 31)]
+data3 = data3[['symbol','PeRatio']]
+data3 = pd.merge(data3,data_Cat[['symbol','captype']],how='left',on='symbol')
+data3 = data3.sort_values(['captype','symbol'])
 
 sns.set(rc={'figure.figsize':(16,12), 'figure.dpi':300}) #rc={'figure.dpi':300}
-g = sns.barplot(data = data1, x='PeRatio',  y='symbol', orient='h',hue='captype',dodge=False)
-g.axvline(data1.PeRatio.mean(), c='k', ls='-', lw=2.5)
+g = sns.barplot(data = data3, x='PeRatio',  y='symbol', orient='h',hue='captype',dodge=False)
+g.axvline(data3.PeRatio.mean(), c='k', ls='-', lw=2.5)
 plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
@@ -285,14 +285,14 @@ So we plot the percentage change of PE by quarter and find their differences.
 
 
 ```python
-data2 = data_vm.loc[(data_vm['asOfDate']==datetime.date(2022, 12, 31)) | (data_vm['asOfDate']==datetime.date(2021, 12, 31))]
-data2 = data2[['symbol','PeRatio','asOfDate']]
+data4 = data_vm.loc[(data_vm['asOfDate']==datetime.date(2022, 12, 31)) | (data_vm['asOfDate']==datetime.date(2021, 12, 31))]
+data4 = data4[['symbol','PeRatio','asOfDate']]
 
-data2 = pd.merge(data2,data_Cat[['symbol','marketCap']],how='left',on='symbol')
-data2 = data2.sort_values(['marketCap','symbol','asOfDate'],ascending = [False,True,True])
+data4 = pd.merge(data4,data_Cat[['symbol','marketCap']],how='left',on='symbol')
+data4 = data4.sort_values(['marketCap','symbol','asOfDate'],ascending = [False,True,True])
 
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
-g = sns.barplot(data=data2, x="symbol", y="PeRatio", hue="asOfDate")
+g = sns.barplot(data=data4, x="symbol", y="PeRatio", hue="asOfDate")
 plt.xticks(rotation=45)
 plt.show()
 ```
@@ -301,12 +301,12 @@ plt.show()
 We could see that in large-cap firms, PE growing negatively while others are quite mixed. This show that, large firm stocks are relatively cheaper over time.
 	
 ```python
-data3 = piv_pe[['symbol','pct_change']]
-data3 = pd.merge(data3,data_Cat[['symbol','marketCap','captype','industry']],how='left',on='symbol')
-data3 = data3.sort_values(['marketCap','symbol'],ascending = [False,True])
+data5 = piv_pe[['symbol','pct_change']]
+data5 = pd.merge(data5,data_Cat[['symbol','marketCap','captype','industry']],how='left',on='symbol')
+data5 = data5.sort_values(['marketCap','symbol'],ascending = [False,True])
 
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
-g = sns.barplot(data=data3, x="symbol", y="pct_change", hue='captype',dodge=False)
+g = sns.barplot(data=data5, x="symbol", y="pct_change", hue='captype',dodge=False)
 plt.xticks(rotation=45)
 plt.show()
 ```

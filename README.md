@@ -1,35 +1,33 @@
 นักศึกษามีการใช้งานเครื่องมือเขียนโปรแกรมที่เกี่ยวข้องกับครึ่งเทอมแรกของวิชานี้ (Pandas/NumPy, Matplotlib/Seaborn) อย่างมีนัยสําคัญทั้งในกระบวนการจัดการและทําความสะอาดข้อมูล กระบวนการย่อยและวิเคราะห์ข้อมูล รวมถึงกระบวนการสรุปผลและแสดงภาพนิทัศน์ของข้อมูล
 
+
 # Are Thai healthcare related stock still captivating?
 
 Thai Health industry is found as a outperforming stock growth that the market for at least 5 executives year. They perform even better during the Covid-19 era (2019-2022). Over the past three years, the earnings of businesses in the healthcare sector have increased by 22% annually with profit growth of 14% per year. This indicates that these businesses are producing more sales and subsequently their profits are increasing too.
 
-![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
-
-<insert graph 5 year>
+Graph compare Health index (HELTH) with SET index over 5 year
+![alt text](https://user-images.githubusercontent.com/118241553/226198314-6dfabf99-f4b2-4a38-a82c-bdd546c30be9.png)
 
 Unfortunately, after situation of covid-19 recover, the growth of healthcare industry drop. The overall growing pattern are converving to the market (compare with SET index). This lead to the question that, "Are healthcare related stock still captivating. If yes, which kind of stock shall we invest on?
 
-<insert graph 1 year>
+Graph compare Health index (HELTH) with SET index over 1 year
+![alt text](https://user-images.githubusercontent.com/118241553/226190434-aa2f2856-5f49-4a87-bf6c-403b7bf7c5ef.png)
 
-<insert graph 6 months>
+Graph compare Health index (HELTH) with SET index over 6 months
+![alt text](https://user-images.githubusercontent.com/118241553/226190427-967472ba-9b9a-47ef-9604-e472ed94c030.png)
 
 
 ## Installation
 ```python
 from yahooquery import Ticker
 import pandas as pd
-import os
 import time
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import datetime
 import matplotlib.ticker as ticker
-
-os.chdir(os.getcwd())
 ```
-
 
 ## Dataset
 
@@ -54,65 +52,52 @@ We aim to see progress since before Covid situation until current time. Therefor
 start = '2017-01-01'
 end = '2023-02-28'
 ```
+
 ## Data preparation
 
-stock profile comprise of 
+We retrieve data from 4 datasets:
 
-(i) 'summary_detail' - information about stock at some point of time.
+(I) summary_detail - summary information about stock.
 
-(ii) 'asset_profile' - information on company profile including address, contact information, industry, sector, business summary, and related company officer, etc.
+(II) asset_profile - information on company profile including address, contact information, industry, sector, business summary, and related company officer, etc.
 
-(iii) 'valuation_measures' - valuation measure by quarter comprise of Enterprise Value, Enterprises Value / EBITDA Ratio,	Enterprises Value / Revenue Ratio,	Forward Pe Ratio,	Market Capitalization,	Pb Ratio,	PeRatio,	Peg Ratio,	PsRatio.
+(III) valuation_measures - valuation measure by quarter comprise of Enterprise Value, Enterprises Value / EBITDA Ratio,	Enterprises Value / Revenue Ratio,	Forward Pe Ratio,	Market Capitalization,	Pb Ratio,	PeRatio,	Peg Ratio,	PsRatio.
+
+(IV) history - transactional data comprise of openning price, highest price, lowest price, close price, volume trade, adjclose, dividends, splits.
 											
 
 ```python
 tickers_sum = tickers.summary_detail
 data = tickers.asset_profile
 valuation_measures = tickers.valuation_measures
+df_history = tickers.history
 ```
-
-```python
-tickers_sum
-```
-<insert picture>
-
-```python
-data
-```
-<insert picture>
-
-```python
-valuation_measures
-```
-<insert picture>
  
  
 ### Prepare data
  
 However, the data is not available for next step computation. We select some data point within dataset 'summary_detail', 'asset_profile' and 'valuation_measures' to use.
 
-#### valuation_measures
+#### #valuation_measures
 Select only data with data collect quarterly (period type = 3 month)
  
 ```python
 data_vm = valuation_measures.loc[valuation_measures['periodType']=='3M'].reset_index()
 data_vm
 ```
-<insert df result from python>
+![alt text](https://user-images.githubusercontent.com/118241553/226266023-445f8326-4d5d-4d4b-9299-2abf95b958b6.png)
 
  
-We also prepare "Pe ratio" for later use. Pe ratio will be pivot with date in order to see their progress over time.
- 
-> Pe ratio - or 'price-to-earnings ratio' is the ratio for valuing a company that measures its current share price relative to its earnings per share (EPS). The price-to-earnings ratio is also sometimes known as the price multiple or the earnings multiple. P/E ratios are used by investors and analysts to determine the relative value of a company's shares in an apples-to-apples comparison. It can also be used to compare a company against its own historical record or to compare aggregate markets against one another or over time. (Source: https://www.investopedia.com/terms/p/price-earningsratio.asp)
+We also prepare "Pe ratio" pivot with quarterly date in order to see their progress over time.
  
 ```python
 piv_pe = pd.pivot_table(data_vm, values="MarketCap",index=["symbol"], columns=["asOfDate"]).reset_index()
 piv_pe
 ```
-<insert df result from python>
+![alt text](https://user-images.githubusercontent.com/118241553/226198324-03d0e276-17ed-4819-bedd-f75971f6dd5e.png)
  
 ##### Replace missing data:
-With the nature of stock data, just few data is missing out. Some are missing due to the fact that that stock just enter the stock market after 2017. Only BCH stock is found that the data is truly missing due to the late data submission and yahoofinance have not update the new data yet. We solve this missing by inserting more updated data from search engine.
+With the nature of stock data, just few data is missing out. Some are missing due to the fact that that stock just enter the stock market after 2017. Only BCH stock is found that the data is truly missing due to the late data submission and yahoofinance have not update the new data yet. We solve this missing by inserting more updated data from "www.settrade.com". After replace missing data, we also change date type to datetime to further process.
  
 ```python
 missing = pd.DataFrame({'symbol':['BCH.bk'],
@@ -120,9 +105,11 @@ missing = pd.DataFrame({'symbol':['BCH.bk'],
                         'MarketCap':[51121830000],
                         'PeRatio':[9.74]})
 data_vm = pd.concat([data_vm,missing])
+
+data_vm['asOfDate'] = pd.to_datetime(data_vm['asOfDate']).dt.date
 ```
 
-#### asset_profile
+#### #asset_profile
 Select several column that will be used further.
  
 ```python
@@ -139,6 +126,9 @@ data_Cat.head()
 ```
 <insert df result from python>
 
+![alt text](https://user-images.githubusercontent.com/118241553/226268477-d3202b5c-700f-48d5-8b2d-0fb534064dac.png)
+
+	
 Add new column provide a firm size from market capitalisation data.
 The critiria are:
  
@@ -156,8 +146,8 @@ data_Cat.loc[(data_Cat['marketCap'] < 50000000000) & (data_Cat['marketCap'] >= 1
 data_Cat.loc[(data_Cat['marketCap'] >= 50000000000),'captype'] = 'large_cap'
 data_Cat.head() 
 ```
-<insert df result from python>
- 
+![alt text](https://user-images.githubusercontent.com/118241553/226198323-23723607-3dee-4473-8e17-a0b230e0d9a5.png)
+	
 
 ```python
 data_price = pd.DataFrame()
@@ -174,37 +164,41 @@ except:
 data_price['date'] = pd.to_datetime(data_price['date'], utc=True).dt.date
 data_price.head()
 ``` 
-<insert df result from python>
+
+![alt text](https://user-images.githubusercontent.com/118241553/226269209-973ab5fa-5621-42df-8d08-155062a973fd.png)
 
 	
 ## Which industry are the driving changes
+	The healthcare sector composes of firms from different industries and different sizes. We try to find out which characteristics of firms inside the healthcare sector drive growth and which we should beware of.
 
+	We diagnose over 1 year period using data from the last quarter of 2022 through the last quarter of 2023 to see the change over the peak of the Covid-19 era (emergence of COVID-19 virus variant Omicron) until present.
 
-
-## Medicare care grow with assistance from Government
-The healthcare sector has been the beneficiary of government policy that stretches back to 2003 to promote Thailand as a ‘medical hub’. Government support as follows:
-
-(i) extending the permitted period of stay for visitors traveling to Thailand for medical treatment from China and the CLMV nations to 90 days from 30 days and allowing up to 4 family members to accompany travelers bound for Thai hospitals
-
-(ii) extending long stay visas from 1 to 10 years for people from 14 specified nations 
-
-(iii) provide a special dental and health-check package for international travelers
-
-All of these actions will assist Thai private hospitals in broadening their customer base to include more foreigners, a market segment with greater purchasing power who frequently spend more on healthcare than their local counterparts. As a result, private hospitals are experiencing steady revenue growth and are maintaining excellent profit margins. And this has in fact led to the steady growth of medical tourism in the country.
-In addition, Thailand is quickly gaining an international reputation as a high-quality and inexpensive destination for health tourists" to visit and get complicated medical procedures performed which make Thai healthcare industry become more and more attractive.
-
+	Firstly, we diagnose firms by their size because we assume that size of firm should affect their potential to do business. We want to see how firms are growing. We focus on their marketcapitalization by preparing market capitalization data pivot with quarter period group by the firm size.
+	
 ```python
 data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
 data4 = data4.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
-data4.head()
+data4
 ```
 
+![alt text](https://user-images.githubusercontent.com/118241553/226274141-c6508629-ef31-4bfd-a0b1-958cd2d29a0b.png)
+	
 ```python
-data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
-data4 = data4.groupby(['captype', 'asOfDate'])['MarketCap'].sum().reset_index()
-data4.head()
+tmp_forMerge = pd.DataFrame()
+for i in data4['captype'].unique():
+    tmp = data4.loc[data4['captype']==i]
+    tmp = tmp.sort_values('asOfDate').reset_index(drop=1)
+    tmp['pct_change'] = tmp['MarketCap'].pct_change()
+    tmp_forMerge = pd.concat([tmp_forMerge,tmp])
+    
+data4 = pd.merge(data4,tmp_forMerge,on=['captype','asOfDate'], how='left')
+data4
 ```
 
+![alt text](https://user-images.githubusercontent.com/118241553/226274126-aef5dc53-2c26-4467-b34b-c11b37087783.png)	
+
+According to graph below, Blue, orange, and green lines represent large-cap, mid-cap, and small-cap firms respectively. Large-cap firms have slightly negative to positive changes in market capitalization from -0.6% to 16.4%. While small to mid-cap firms grow negatively over time. 
+	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
 g = sns.lineplot(data=data4, x="asOfDate", y="pct_change", hue='captype',lw=5)
@@ -221,6 +215,10 @@ plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188963-e8d32df5-b6b6-4cc3-82be-d2d38a01bfbe.png)
 
+
+Secondly, we look into what firms do. So we divided firms into groups by their industries -- Medical Care Facilities, Specialty Chemicals, Medical Instruments & Supplies, Medical Devices, Packaged Foods, and Medical Distribution. 
+
+
 ```python
 data5 = pd.merge(data_vm,data_Cat[['symbol','industry']],how='left',on='symbol') 
 data5 = data5.groupby(['industry', 'asOfDate'])['MarketCap'].sum().reset_index()
@@ -233,8 +231,16 @@ for i in data5['industry'].unique():
     tmp_forMerge = pd.concat([tmp_forMerge,tmp])
     
 data5 = pd.merge(data5,tmp_forMerge,on=['industry','asOfDate'], how='left')
-data5.head()
+data5
 ```
+
+![alt text](https://user-images.githubusercontent.com/118241553/226275360-d18ba8c4-bc2f-412f-b9ad-2f78c704080e.png)
+	
+All types of industries perform in the same direction. 
+- We could see that “Medical care facilities” is less fluctuate than other industries with positive growth.
+- Specialty chemical and medical distribution groups are the industries with negative growth throughout 2022 with the lowest growth among all industries.
+- Medical devices and medical instruments & supplies are groups that provide essential tools or devices for hospitals. As a supportive industry for the healthcare sector, this group moves along with the Medical care facilities but more fluctuated.
+	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
 g = sns.lineplot(data=data5, x="asOfDate", y="pct_change", hue='industry',lw=5)
@@ -252,7 +258,11 @@ plt.show()
 ![alt text](https://user-images.githubusercontent.com/38032736/226188964-ba00eb8f-40a7-4422-89aa-e085af44a6f2.png)
 
 
+Next, we measure company attractiveness by focusing on the “PE ratio”. 
+> PE ratio - or 'price-to-earnings ratio' is the ratio for valuing a company that measures its current share price relative to its earnings per share (EPS). The price-to-earnings ratio is also sometimes known as the price multiple or the earnings multiple. P/E ratios are used by investors and analysts to determine the relative value of a company's shares in an apples-to-apples comparison. It can also be used to compare a company against its own historical record or to compare aggregate markets against one another or over time. (Source: https://www.investopedia.com/terms/p/price-earningsratio.asp)
 
+The lower PE ratio compared with other stocks show that the stock we are focusing on is relatively cheaper than other. Seeing from the next figure, we compare PE Ratio with their median PE. Some are about and lower than the median. We cannot see any patterns within the firm-cap type. 
+	
 ```python
 data1 = data_vm.loc[data_vm['asOfDate']==datetime.date(2022, 12, 31)]
 data1 = data1[['symbol','PeRatio']]
@@ -265,6 +275,10 @@ g.axvline(data1.PeRatio.mean(), c='k', ls='-', lw=2.5)
 plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188957-d4a38863-7993-4db1-9ac3-dbd0720c9c18.png)
+
+	
+So we plot the percentage change of PE by quarter and find their differences.
+
 
 ```python
 data2 = data_vm.loc[(data_vm['asOfDate']==datetime.date(2022, 12, 31)) | (data_vm['asOfDate']==datetime.date(2021, 12, 31))]
@@ -280,6 +294,8 @@ plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188961-b1f6983f-6388-429d-b3f1-98d76fc956c7.png)
 
+We could see that in large-cap firms, PE growing negatively while others are quite mixed. This show that, large firm stocks are relatively cheaper over time.
+	
 ```python
 data3 = piv_pe[['symbol','pct_change']]
 data3 = pd.merge(data3,data_Cat[['symbol','marketCap','captype','industry']],how='left',on='symbol')
@@ -292,6 +308,19 @@ plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226191708-b1b16d10-be5b-4f2f-8d04-f0a66cdb4af4.png)
 
+Since we aim to select stocks that have the potential to grow positively with low fluctuation, the list of stocks that meet our criteria is large firms in medical care facilities as given: BDMS, BH, RAM, THG, and BCH.
+
+- Bangkok Dusit Medical Services (BDMS)
+- Bumrungrad International Hospital (BH)
+- Ramkhamhaeng Hospital (RAM)
+- Thonburi Healthcare Group PCL (THG)
+- Bangkok Chain Hospital PCL (BCH)
+
+Note: Medical care facilities are firms that do business to provide places with health care. They include hospitals, clinics, outpatient care centers, and specialized care centers, such as birthing centers and psychiatric care centers.
+	
+	
+## Which firm should we select to invest?
+	
 ```python
 dataSelect = data_price.loc[data_price['symbol'].isin( data_Cat.loc[data_Cat['captype']=='large_cap']['symbol'])]
 tmp_forMerge = pd.DataFrame()
@@ -382,4 +411,18 @@ plt.show()
 
 ![alt text](https://user-images.githubusercontent.com/38032736/226188989-f361fe34-5956-4a36-9b71-76da93b3fe30.png)
 
+
+
+
+## Medicare care grow with assistance from Government
+The healthcare sector has been the beneficiary of government policy that stretches back to 2003 to promote Thailand as a ‘medical hub’. Government support as follows:
+
+(i) extending the permitted period of stay for visitors traveling to Thailand for medical treatment from China and the CLMV nations to 90 days from 30 days and allowing up to 4 family members to accompany travelers bound for Thai hospitals
+
+(ii) extending long stay visas from 1 to 10 years for people from 14 specified nations 
+
+(iii) provide a special dental and health-check package for international travelers
+
+All of these actions will assist Thai private hospitals in broadening their customer base to include more foreigners, a market segment with greater purchasing power who frequently spend more on healthcare than their local counterparts. As a result, private hospitals are experiencing steady revenue growth and are maintaining excellent profit margins. And this has in fact led to the steady growth of medical tourism in the country.
+In addition, Thailand is quickly gaining an international reputation as a high-quality and inexpensive destination for health tourists" to visit and get complicated medical procedures performed which make Thai healthcare industry become more and more attractive.
 

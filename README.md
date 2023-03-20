@@ -110,7 +110,12 @@ data_vm['asOfDate'] = pd.to_datetime(data_vm['asOfDate']).dt.date
 ```
 
 #### #asset_profile
-Select several column that will be used further.
+"summary_detail" and "asset_profile" come in Json file. We need to prepare to dataframe first.
+
+![alt text](https://user-images.githubusercontent.com/118241553/226198370-a905e1b4-1d10-4823-9088-ae999c139edf.png)
+
+![alt text](https://user-images.githubusercontent.com/118241553/226198372-6c936ea2-0bfa-4e81-b824-026ad6b75af7.png)
+
  
 ```python
 data_Cat = pd.DataFrame()
@@ -129,25 +134,7 @@ data_Cat.head()
 ![alt text](https://user-images.githubusercontent.com/118241553/226268477-d3202b5c-700f-48d5-8b2d-0fb534064dac.png)
 
 	
-Add new column provide a firm size from market capitalisation data.
-The critiria are:
- 
-  (i) Small Cap: Market Cap < 10,000 MB
-                                   
-  (ii) Mid Cap: 10,000 MB < Market Cap. < 50,000 MB
-                                               
-  (iii) Large Cap: Market Cap > 50,000 MB
-                                     
-source: https://knowledge.bualuang.co.th/knowledge-base/market-cap/
- 
-```python
-data_Cat.loc[(data_Cat['marketCap'] < 10000000000),'captype'] = 'small_cap'
-data_Cat.loc[(data_Cat['marketCap'] < 50000000000) & (data_Cat['marketCap'] >= 10000000000),'captype'] = 'mid_cap'
-data_Cat.loc[(data_Cat['marketCap'] >= 50000000000),'captype'] = 'large_cap'
-data_Cat.head() 
-```
-![alt text](https://user-images.githubusercontent.com/118241553/226198323-23723607-3dee-4473-8e17-a0b230e0d9a5.png)
-	
+Prepare historical data in our interested timeframe.
 
 ```python
 data_price = pd.DataFrame()
@@ -169,11 +156,33 @@ data_price.head()
 
 	
 ## Which industry are the driving changes
-	The healthcare sector composes of firms from different industries and different sizes. We try to find out which characteristics of firms inside the healthcare sector drive growth and which we should beware of.
 
-	We diagnose over 1 year period using data from the last quarter of 2022 through the last quarter of 2023 to see the change over the peak of the Covid-19 era (emergence of COVID-19 virus variant Omicron) until present.
+The healthcare sector composes of firms from different industries and different sizes. We try to find out which characteristics of firms inside the healthcare sector drive growth and which we should beware of.
 
-	Firstly, we diagnose firms by their size because we assume that size of firm should affect their potential to do business. We want to see how firms are growing. We focus on their marketcapitalization by preparing market capitalization data pivot with quarter period group by the firm size.
+We diagnose over 1 year period using data from the last quarter of 2022 through the last quarter of 2023 to see the change over the peak of the Covid-19 era (emergence of COVID-19 virus variant Omicron) until present.
+
+Firstly, we diagnose firms by their size because we assume that size of firm should affect their potential to do business. We want to see how firms are growing. We focus on their marketcapitalization by preparing market capitalization data pivot with quarter period group by the firm size.
+	
+We add new column provide a firm size from market capitalisation data.
+The critiria are:
+ 
+  (i) Small Cap: Market Cap < 10,000 MB
+                                   
+  (ii) Mid Cap: 10,000 MB < Market Cap. < 50,000 MB
+                                               
+  (iii) Large Cap: Market Cap > 50,000 MB
+                                     
+source: https://knowledge.bualuang.co.th/knowledge-base/market-cap/
+ 
+```python
+data_Cat.loc[(data_Cat['marketCap'] < 10000000000),'captype'] = 'small_cap'
+data_Cat.loc[(data_Cat['marketCap'] < 50000000000) & (data_Cat['marketCap'] >= 10000000000),'captype'] = 'mid_cap'
+data_Cat.loc[(data_Cat['marketCap'] >= 50000000000),'captype'] = 'large_cap'
+data_Cat.head() 
+```
+![alt text](https://user-images.githubusercontent.com/118241553/226198323-23723607-3dee-4473-8e17-a0b230e0d9a5.png)
+	
+	
 	
 ```python
 data4 = pd.merge(data_vm,data_Cat[['symbol','captype']],how='left',on='symbol') 
@@ -484,6 +493,7 @@ plt.show()
 ![alt text](https://user-images.githubusercontent.com/38032736/226188989-f361fe34-5956-4a36-9b71-76da93b3fe30.png)
 
 In conclusion
+
 - For risk consideration, stock with lower downside risk (price change distribution that are skew to the left) are BDMS, BH, TGH. 
 	
 - With the price trend in 2022, BDMS, BH, TGH and RAM have positive price change.

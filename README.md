@@ -320,7 +320,9 @@ Note: Medical care facilities are firms that do business to provide places with 
 	
 	
 ## Which firm should we select to invest?
-	
+
+Using transactional data, to analyze deeper which firms are attractive. We use historical data of daily stock trade from 2017 until the present.
+
 ```python
 dataSelect = data_price.loc[data_price['symbol'].isin( data_Cat.loc[data_Cat['captype']=='large_cap']['symbol'])]
 tmp_forMerge = pd.DataFrame()
@@ -334,6 +336,17 @@ dataSelect = tmp_forMerge.copy().reset_index(drop=1)
 dataSelect.head()
 ```
 
+Firstly, we want to know how each firm grew over time. We plot the “close price” of each firm to see how their price move. 
+
+Here are some insights. 
+	
+Thai medical care industry has not rapidly grew from the beginning of covid era in 2019 as we make the assumption at first. They begin to grow rapidly because of Omicron in late 2022. Firm revenue grew rapidly as a result of the overwhelming demand for medical care and vaccination. All 5 stocks in consideration grow significantly. 
+
+Here are some important events we need to know before analyzing further:
+
+- THG price spiked in the second quarter of 2022 till its peak and then drop dramatically. The drop in price seems to be due to the fact that from the 4th quarter of 2020 to the present, THG's stock price has increased by 41%, the highest compared to all 5 companies studied by the research department better than the hospital group, which rose about 11%. This may cause some investors to sell for profits.
+- RAM price drop drastically in the last quarter of 2022 due to Stock Split.
+
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
 g = sns.lineplot(data=dataSelect, x="date", y="close", hue='symbol',lw=5)
@@ -341,6 +354,9 @@ plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188966-9f48ad6c-34e4-407d-b3d5-136941dc95b1.png)
 
+	
+Next, we consider stock price fluctuation. In the picture may show several price change spike from BH, THG, and RAM. BH, THG, and RAM tend to be morefluctuate than BDMS and BCH. 
+	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
 g = sns.lineplot(data=dataSelect, x="date", y="pct_change", hue='symbol',lw=5)
@@ -348,6 +364,11 @@ plt.show()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188968-45d28251-7163-4ba9-910b-2b8db0034512.png)
 
+	
+We want to see how stock price move and there rate of change of each day from 2017 until now to see a better picture of each stock.
+
+We found out that
+	
 ```python
 for idx, i in enumerate (dataSelect['symbol'].unique()):
     tmp_ = dataSelect.loc[dataSelect['symbol']==i].reset_index(drop=1)
@@ -358,20 +379,55 @@ for idx, i in enumerate (dataSelect['symbol'].unique()):
     sns.lineplot(data=tmp_, x="date", y="pct_change", hue='symbol',lw=5, ax=axes[1])
     plt.show()
 ```
+BDMS price were fluctuate between 18 - 30 with positive gradually move. BDMS price change is around -10%-10%.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188969-5baa8e35-b0d6-40e6-930b-57701c92eedf.png)
+
+BH price were fluctuate between 50 - 250. BH price change is around -10%-15%.
+BH move relatively similar to BDMS. But with a higher stock price, BH is more fluctuate than BDMS
+
 ![alt text](https://user-images.githubusercontent.com/38032736/226188971-341eade9-cf46-48cf-a592-fe517dcf6824.png)
+	
+RAM is a stock with most fluctuate one with frequent stock split. RAM price were fluctuate between 25 - 200. RAM price change is around -80%-20%.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188973-c3ad6bf1-d406-47f7-b51e-a5a14eb935dc.png)
+
+THG price were fluctuate between 18 - 95. THG price change is around -18%-10%.
+
 ![alt text](https://user-images.githubusercontent.com/38032736/226188974-f327f83f-33b3-4d1f-8e82-52253b8cbe8b.png)
+	
+BCH price were fluctuate between 50 - 250. BCH price change is around -15%-10%.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188976-0686953f-84db-461c-a3ab-972b0b067744.png)
 
 
+Up to this point, eventhough 5 stock we select are in the same industries, there are several differences.
+
+- BDMS would be a stock for investor who are risk averse. The stock have a good positive growth with risk that quite balance between upside and downside risk.
+
+- For those investor who do day to day trade or short term trade. Stock with higher price fluctuation like TGH and RAM may be more suitable.
+
+- BH and BCH came up with moderate risk, but BH have higher maximum negative change.
+
+	
+## Focus on the year 2022
+
+Looking at the same parameter as in 5 year duration.
+	
+Through price change, all 5 are in a pretty good sign. All have positive growth over the year.
+	
 ```python
 dataSelect2 = data_price.loc[(data_price['symbol'].isin( data_Cat.loc[data_Cat['captype']=='large_cap']['symbol'])) & 
                             (pd.to_datetime(data_price['date']).dt.date >= datetime.date(2022,1,1)) & (pd.to_datetime(data_price['date']).dt.date <= datetime.date(2022,12,31))]
 dataSelect2.head()
 ```
 ![alt text](https://user-images.githubusercontent.com/38032736/226188977-c03be305-31c7-4247-b961-4670adaa5c65.png)
+
+In the year 2022, RAM, BH, and TGH still the group with higher fluctuation.
+
 ![alt text](https://user-images.githubusercontent.com/38032736/226188978-3d134283-9843-4c1d-8476-e1b577c44c1d.png)
+
+We focus more on each stock, this time we look the rate od return through the histogram to se stock price change distribution.
 
 ```python
 df_return = pd.DataFrame()
@@ -397,12 +453,28 @@ for idx, i in enumerate (dataSelect2['symbol'].unique()):
     print ('sum pct_change', i, tmp_['pct_change'].sum())
 ```
 
+BDMS price grow positively from ฿20 and reach it peak around ฿32 and drop a bit to ฿30 at the end of year. Price fluatuate around -4% - 4% which is relatively low compare to other. Price change distribution are quite symmetry with little skew to the left.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188979-6dc4efa9-7739-4512-a7d9-8b7cba968387.png)
+	
+BH price grow positively from ฿130 and reach it peak around ฿240 and drop a bit to ฿220 at the end of year. Price fluatuate around -7.5% - 10%. Price change distribution are quite symmetry with little skew to the left.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188982-991782c4-f4d5-46e9-be41-32380e5d8a3e.png)
+
+RAM price grow from ฿40 at the beginning of the year, drop a bit to ฿32, reach it peak around ฿65 and drop to ฿55. Price are quite steady from last 5 month of the year around ฿55. Price fluatuate around -10% - 25% which is relatively high compare to other. Price change distribution are quite symmetry with little skew to the right. RAM have more downside risk compare to the rest.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188984-051d2775-11ea-49ee-b709-711e1b12ad6d.png)
+	
+TGH price grow from ฿35 at the beginning of year. Its price hike a lot and reach its peak at ฿100 in April then drastically drop in May. After that to the end of year, prices mildly fluctuate around ฿55-฿75. Price fluatuate around -7.5% - 10%. Price change distribution are skew to the left.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188987-79f5c495-43f1-44a1-8b12-58e2ac88d1dc.png)
+		
+BCH price are fluctuate a lot in 2022. Price start at ฿19 and end at ฿20 which show small differences. But in the between, price are fluctuate up and down around -6% - 6% which is quite moderate. Price change distribution are quite symmetry with little skew to the right.
+	
 ![alt text](https://user-images.githubusercontent.com/38032736/226188988-6ce5de2b-73d3-4106-a9e3-dd31ad94d72d.png)
 
+We also provide a return graph if investor hold stock for a year. The return range from 8% - 70% which are very high comparing to the overall stock market.
+	
 ```python
 sns.set(rc={'figure.figsize':(24,12), 'figure.dpi':300})
 g = sns.barplot(data=df_return, x="symbol", y="return", hue='symbol',dodge=False)
@@ -411,18 +483,31 @@ plt.show()
 
 ![alt text](https://user-images.githubusercontent.com/38032736/226188989-f361fe34-5956-4a36-9b71-76da93b3fe30.png)
 
+In conclusion
+- For risk consideration, stock with lower downside risk (price change distribution that are skew to the left) are BDMS, BH, TGH. 
+	
+- With the price trend in 2022, BDMS, BH, TGH and RAM have positive price change.
+	
+- Mild fluctuation stock would be BDMS (around -6 - 6%).
+	
+- The moderate (around -10% to 10%) are BCH and BH. 
 
+- High fluctuation stock are RAM and THG (more than -10% - 10%)
+	
+- Stock with highest return if they hold stock for year is THG and lowest is BCH. Even the lowest return stock provide a return around 8% wish is very attractive for holding stock for year.
 
+Up to this point, we conclude that even after the COVID-19 era, healthcare sector stock are still attractive. But be aware that not all stock is interesting. Medical care in a large company  are the one that still perform really well after the COVID era. We suspect that this because the impact of health tourism which can be read further in our last part. Up to this point, investor can customised portfolio by their risk and return preference.
 
-## Medicare care grow with assistance from Government
-The healthcare sector has been the beneficiary of government policy that stretches back to 2003 to promote Thailand as a ‘medical hub’. Government support as follows:
+> Medicare care grow with assistance from Government
+	
+> The healthcare sector has been the beneficiary of government policy that stretches back to 2003 to promote Thailand as a ‘medical hub’. Government support as follows:
 
-(i) extending the permitted period of stay for visitors traveling to Thailand for medical treatment from China and the CLMV nations to 90 days from 30 days and allowing up to 4 family members to accompany travelers bound for Thai hospitals
+> (i) extending the permitted period of stay for visitors traveling to Thailand for medical treatment from China and the CLMV nations to 90 days from 30 days and allowing up to 4 family members to accompany travelers bound for Thai hospitals
 
-(ii) extending long stay visas from 1 to 10 years for people from 14 specified nations 
+> (ii) extending long stay visas from 1 to 10 years for people from 14 specified nations 
 
-(iii) provide a special dental and health-check package for international travelers
+> (iii) provide a special dental and health-check package for international travelers
 
-All of these actions will assist Thai private hospitals in broadening their customer base to include more foreigners, a market segment with greater purchasing power who frequently spend more on healthcare than their local counterparts. As a result, private hospitals are experiencing steady revenue growth and are maintaining excellent profit margins. And this has in fact led to the steady growth of medical tourism in the country.
+> All of these actions will assist Thai private hospitals in broadening their customer base to include more foreigners, a market segment with greater purchasing power who frequently spend more on healthcare than their local counterparts. As a result, private hospitals are experiencing steady revenue growth and are maintaining excellent profit margins. And this has in fact led to the steady growth of medical tourism in the country.
 In addition, Thailand is quickly gaining an international reputation as a high-quality and inexpensive destination for health tourists" to visit and get complicated medical procedures performed which make Thai healthcare industry become more and more attractive.
 

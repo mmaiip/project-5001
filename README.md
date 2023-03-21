@@ -4,15 +4,17 @@ Thai Health industry is found as a outperforming stock growth that the market fo
 
 Graph compare Health index (HELTH) with SET index over 5 year
 ![alt text](https://user-images.githubusercontent.com/118241553/226198314-6dfabf99-f4b2-4a38-a82c-bdd546c30be9.png)
+Source: https://www.set.or.th/th/market/index/set/service/helth
 
 Unfortunately, after situation of covid-19 recover, the growth of healthcare industry drop. The overall growing pattern are converving to the market (compare with SET index). This lead to the question that, "Are healthcare related stock still captivating. If yes, which kind of stock shall we invest on?
 
 Graph compare Health index (HELTH) with SET index over 1 year
 ![alt text](https://user-images.githubusercontent.com/118241553/226190434-aa2f2856-5f49-4a87-bf6c-403b7bf7c5ef.png)
+Source: https://www.set.or.th/th/market/index/set/service/helth
 
 Graph compare Health index (HELTH) with SET index over 6 months
 ![alt text](https://user-images.githubusercontent.com/118241553/226190427-967472ba-9b9a-47ef-9604-e472ed94c030.png)
-
+Source: https://www.set.or.th/th/market/index/set/service/helth
 
 ## Installation
 ```python
@@ -431,7 +433,8 @@ In the year 2022, RAM, BH, and TGH still the group with higher fluctuation.
 
 ![alt text](https://user-images.githubusercontent.com/38032736/226188978-3d134283-9843-4c1d-8476-e1b577c44c1d.png)
 
-We focus more on each stock, this time we look the rate od return through the histogram to se stock price change distribution.
+We focus more on each stock, this time we look the rate of return through the histogram to se stock price change distribution.
+This distribution provide information chance of getting positive return and also potential loss in value. x axis show return from negative to positive return. Y-axis show frequency count of each return. Therefore, if the distribution are skew to the right, that stock are more likely to get a negative return and vice versa.
 
 ```python
 df_return = pd.DataFrame()
